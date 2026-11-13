@@ -4,18 +4,49 @@
 #include <algorithm>
 using namespace std;
 
-void insertionSort(vector<long long>& arr) {
-	int n = arr.size();
-	for (int i = 1; i < n; i++) {
-		long long key = arr[i];
-		int j = i - 1;
+void merge(vector<long long>& target, int left, int mid, int right) {
+	vector<long long> temp;
 
-		while (j >= 0 && arr[j] > key) {
-			arr[j + 1] = arr[j];
-			j--;
+	int i = left;
+	int j = mid + 1;
+
+	while (i <= mid && j <= right) {
+		if (target[i] <= target[j]) {
+			temp.push_back(target[i]);
+			i++;
 		}
-		arr[j + 1] = key;
+		else {
+			temp.push_back(target[j]);
+			j++;
+		}
 	}
+
+	while (i <= mid) {
+		temp.push_back(target[i]);
+		i++;
+	}
+
+	while (j <= right) {
+		temp.push_back(target[j]);
+		j++;
+	}
+
+	for (int k = 0; k < (int)temp.size(); k++) {
+		target[left + k] = temp[k];
+	}
+}
+
+void mergeSort(vector<long long>& target, int left, int right) {
+    if (left >= right) {
+        return;
+    }
+
+    int mid =  (right + left) / 2;
+
+    mergeSort(target, left, mid);
+    mergeSort(target, mid + 1, right);
+
+    merge(target, left, mid, right);
 }
 
 long long countPieces(const vector<long long>& arz, const vector<long long>& tol, long long x) {
@@ -40,8 +71,8 @@ long long solve(vector<long long>& arz,
 				vector<long long>& tol,
 				long long num) {
 	
-	insertionSort(arz);
-	insertionSort(tol);
+	mergeSort(arz, 0, arz.size() - 1);
+	mergeSort(tol, 0, tol.size() - 1);
 
 	long long low = 1;
 	long long high = arz.back() * tol.back();
